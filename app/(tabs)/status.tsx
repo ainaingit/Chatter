@@ -8,6 +8,11 @@ const statusData = [
     { id: '3', name: 'Paul Lefevre', image: 'https://placeimg.com/100/100/people', status: 'Je travaille sur un projet.' },
 ];
 
+const handlePress = () => {
+    // Logique pour ajouter un statut ou une histoire
+    console.log('Ajouter un statut ou une histoire');
+    alert('Ajouter un statut');
+}
 export default function Status() {
     return (
         <View style={styles.container}>
@@ -27,7 +32,7 @@ export default function Status() {
                 keyExtractor={(item) => item.id}
                 style={styles.list}
             />
-            <TouchableOpacity style={styles.addButton}>
+            <TouchableOpacity style={styles.addButton} onPress={handlePress}>
                 <Text style={styles.addButtonText}>Ajouter un statut</Text>
             </TouchableOpacity>
         </View>
