@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
 import { Link, useRouter } from 'expo-router';  // Importation de useRouter pour redirection
+// Importation de supabase pour la gestion de l'authentification
+import {supabase} from '../database/SupabaseConfig'; // Assurez-vous que le chemin est correct
+
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
