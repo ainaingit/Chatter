@@ -13,6 +13,22 @@ export default function SignIn() {
   const handleSignIn = () => {
     // Logique de connexion ici
     console.log('Se connecter avec', email, password);
+    
+    // connexion via un compte supabase 
+    /*supabase.auth.signInWithPassword({ email, password })
+      .then(({ error }) => {
+        if (error) {
+          console.error('Erreur de connexion:', error.message);
+          alert('Erreur de connexion : ' + error.message);
+        } else {
+          console.log('Connexion réussie !');
+          alert('Connexion réussie !');
+        }
+      })
+      .catch((error) => {
+        console.error('Erreur de connexion:', error.message);
+        alert('Erreur de connexion : ' + error.message);
+      });*/
 
     // Redirection vers l'écran (tabs) après une connexion réussie
     router.push('/(tabs)');
