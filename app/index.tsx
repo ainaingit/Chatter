@@ -1,74 +1,49 @@
-import React, { useState } from 'react';
-import { Text, View, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import { Link } from 'expo-router';  // Importation de Link
+import React from 'react';
+import { Text, View, StyleSheet } from 'react-native';
+import { Button } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
 
-export default function Index() {
-  const [phoneNumber, setPhoneNumber] = useState('');
+const App = () => {
+  const navigation = useNavigation();
 
-  const handleSignInWithPhone = () => {
-    // Afficher un prompt pour entrer le numéro de téléphone
-    const userPhoneNumber = prompt("Entrez votre numéro de téléphone :");
-
-    if (userPhoneNumber) {
-      setPhoneNumber(userPhoneNumber);  // Mettre à jour le numéro dans l'état
-      console.log('Se connecter avec le numéro:', userPhoneNumber);
-      // Logique d'authentification avec le numéro de téléphone ici
-    } else {
-      Alert.alert('Erreur', 'Numéro de téléphone non fourni.');
-    }
+  const handleGoToLogin = () => {
+    navigation.navigate('login'); // Ensure you registered "Login" in your navigator
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Bienvenue sur Chatter !</Text>
-      <Text style={styles.text}>Vous avez déjà un compte ?</Text>
-      <Link href="/signin" style={styles.button}>Se connecter</Link>
-      <Text style={styles.text}>Ou inscrivez-vous !</Text>
-      <Link href="/signup" style={styles.button}>S'inscrire</Link>
-
-      <Text style={styles.text}>Se connecter avec mon numéro :</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Numéro de téléphone"
-        value={phoneNumber}
-        onChangeText={setPhoneNumber}
-        keyboardType="phone-pad"
-      />
-      <Button
-        title="Se connecter avec le numéro"
-        onPress={handleSignInWithPhone}
-        disabled={phoneNumber.length === 0}
-      />
+      <Text style={styles.welcomeText}>Welcome to Chatter!</Text>
+      
+      <Button 
+        mode="contained" 
+        onPress={handleGoToLogin} 
+        style={styles.button}
+        contentStyle={{ paddingVertical: 6 }}
+      >
+        Go to Login
+      </Button>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#25292e',
-    alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+    paddingHorizontal: 20,
   },
-  text: {
-    color: '#fff',
-    fontSize: 18,
-    marginBottom: 10,
+  welcomeText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 20,
   },
   button: {
-    fontSize: 20,
-    color: '#fff',
-    textDecorationLine: 'underline',
-    marginTop: 10,
-  },
-  input: {
-    width: '80%',
-    padding: 10,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#fff',
-    color: '#fff',
-    borderRadius: 5,
+    borderRadius: 8,
+    width: 180,
   },
 });
+
+export default App;
