@@ -1,13 +1,12 @@
 import Constants from "expo-constants"; // ✅ pas avec des { }
 import { initializeApp } from "firebase/app";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
-import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+import { initializeAuth } from 'firebase/auth';
 import { getFirestore } from "firebase/firestore";
 
 const extra = Constants?.expoConfig?.extra ?? {}; // ✅ Plus sûr que manifest
 
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: extra.apiKey,
   authDomain: extra.authDomain,
   projectId: extra.projectId,
@@ -20,9 +19,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-// Initialisation de l'auth avec la persistance
-const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(ReactNativeAsyncStorage)
-});
+// Initialisation de l'auth sans persistance
+const auth = initializeAuth(app);
 export const db = getFirestore(app);
 export { auth }; // Exporte auth
