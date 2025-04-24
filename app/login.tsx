@@ -7,25 +7,31 @@ import {
   Platform,
   Alert,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage"; // ✅ ajouter ceci
 import { TextInput, Button, Text, useTheme } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../config/firebase";
-import { useRouter } from "expo-router"; // ✅ expo-router navigation
+import { useRouter } from "expo-router";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const theme = useTheme();
-  const router = useRouter(); // ✅ hook pour la navigation
+  const router = useRouter();
 
   const handleLogin = async () => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userId = userCredential.user.uid;
+
+      // ✅ Stocker l'identifiant utilisateur localement
+      await AsyncStorage.setItem("userId", userId);
+
       console.log("User logged in:", userCredential.user.email);
 
-      // ✅ Redirection vers l'écran "Chat" dans le dossier (tabs)
-      router.push("(tabs)/Chat"); // Assurez-vous que le nom du dossier est correct
+      // ✅ Aller à la page de chat
+      router.push("(tabs)/Chat");
     } catch (error) {
       console.error("Login error:", error.message);
       Alert.alert("Erreur", "Email ou mot de passe incorrect");
@@ -39,7 +45,7 @@ export default function Login() {
         style={styles.inner}
       >
         <Image
-          source={require("../assets/logo.jpg")} // ton logo ici
+          source={require("../assets/logo.jpg")}
           style={styles.logo}
         />
 
@@ -76,11 +82,21 @@ export default function Login() {
           Se connecter
         </Button>
 
+        <Button
+          mode="outlined"
+          onPress={() => router.push("/PhoneLogin")}
+          style={styles.phoneButton}
+          contentStyle={{ paddingVertical: 6 }}
+          icon="cellphone"
+        >
+          Se connecter avec le téléphone
+        </Button>
+
         <Text style={styles.footer}>
           Pas encore de compte ?{" "}
           <Text
             style={{ color: theme.colors.primary }}
-            onPress={() => router.push("/Register")} // ✅ redirection Register
+            onPress={() => router.push("/Register")}
           >
             S'inscrire
           </Text>
@@ -122,5 +138,11 @@ const styles = StyleSheet.create({
     marginTop: 20,
     textAlign: "center",
     fontSize: 14,
+  },
+  phoneButton: {
+    marginTop: 10,
+    borderRadius: 8,
+    borderColor: "#00796B",
+    borderWidth: 1,
   },
 });

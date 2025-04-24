@@ -1,17 +1,21 @@
 import React from "react";
-import { Text, View, StyleSheet } from "react-native";
+import { Text, StyleSheet } from "react-native";
 import { Button } from "react-native-paper";
-import { useRouter } from "expo-router"; // ✅ Expo Router
+import { LinearGradient } from "expo-linear-gradient"; // ✅ Import dégradé
+import { useRouter } from "expo-router";
 
 const App = () => {
   const router = useRouter();
 
   const handleGoToLogin = () => {
-    router.push("/login"); // ✅ Chemin du fichier app/login.tsx
+    router.push("/login");
   };
 
   return (
-    <View style={styles.container}>
+    <LinearGradient
+    colors={["#e0f7fa", "#80deea"]} // 💙 dégradé doux ciel
+      style={styles.container}
+    >
       <Text style={styles.welcomeText}>Welcome to Chatter!</Text>
 
       <Button
@@ -22,7 +26,7 @@ const App = () => {
       >
         Go to Login
       </Button>
-    </View>
+    </LinearGradient>
   );
 };
 
@@ -31,13 +35,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f5f5f5",
     paddingHorizontal: 20,
   },
   welcomeText: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#333",
+    color: "#fff", // 🤍 pour bien ressortir
     marginBottom: 20,
   },
   button: {

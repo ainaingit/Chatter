@@ -6,6 +6,7 @@ export default function TabLogin(){
         <Tabs>
       <Tabs.Screen name="Chat" options={{ headerShown: false }} />
       <Tabs.Screen name="settings" options={{ headerShown: false }} />
+      <Tabs.Screen name="PhoneLogin" options={{ headerShown: false }} />
     </Tabs>
     );
     
