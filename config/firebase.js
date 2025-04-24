@@ -1,27 +1,28 @@
-// Import the functions you need from the SDKs you need
+import Constants from "expo-constants"; // ✅ pas avec des { }
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import {getAuth} from "firebase/auth";
-import {getFirestore} from "firebase/firestore";
-import  {Constants} from "expo-constants";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+import { getFirestore } from "firebase/firestore";
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const extra = Constants?.expoConfig?.extra ?? {}; // ✅ Plus sûr que manifest
+
 const firebaseConfig = {
-  apiKey: Constants.manifest.extra.apiKey,
-    authDomain: Constants.manifest.extra.authDomain,
-    projectId: Constants.manifest.extra.projectId,
-    storageBucket: Constants.manifest.extra.storageBucket,
-    messagingSenderId : Constants.manifest.extra.messagingSenderId,
-    appId: Constants.manifest.extra.appId,
-    databaseURL: Constants.manifest.extra.databaseURL,
-    measurementId: Constants.manifest.extra.measurementId,
+  apiKey: extra.apiKey,
+  authDomain: extra.authDomain,
+  projectId: extra.projectId,
+  storageBucket: extra.storageBucket,
+  messagingSenderId: extra.messagingSenderId,
+  appId: extra.appId,
+  databaseURL: extra.databaseURL,
+  measurementId: extra.measurementId,
 };
 
-// Initialize Firebase
-initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-export const auth = getAuth();
-export const db = getFirestore();
+const app = initializeApp(firebaseConfig);
+
+// Initialisation de l'auth avec la persistance
+const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(ReactNativeAsyncStorage)
+});
+export const db = getFirestore(app);
+export { auth }; // Exporte auth

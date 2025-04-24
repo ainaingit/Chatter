@@ -1,22 +1,22 @@
-import React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
-import { Button } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
+import React from "react";
+import { Text, View, StyleSheet } from "react-native";
+import { Button } from "react-native-paper";
+import { useRouter } from "expo-router"; // ✅ Expo Router
 
 const App = () => {
-  const navigation = useNavigation();
+  const router = useRouter();
 
   const handleGoToLogin = () => {
-    navigation.navigate('login'); // Ensure you registered "Login" in your navigator
+    router.push("/login"); // ✅ Chemin du fichier app/login.tsx
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.welcomeText}>Welcome to Chatter!</Text>
-      
-      <Button 
-        mode="contained" 
-        onPress={handleGoToLogin} 
+
+      <Button
+        mode="contained"
+        onPress={handleGoToLogin}
         style={styles.button}
         contentStyle={{ paddingVertical: 6 }}
       >
@@ -29,15 +29,15 @@ const App = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f5f5f5",
     paddingHorizontal: 20,
   },
   welcomeText: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
     marginBottom: 20,
   },
   button: {

@@ -1,29 +1,45 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Image, KeyboardAvoidingView, Platform } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  Alert,
+} from "react-native";
 import { TextInput, Button, Text, useTheme } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../config/firebase";
+import { useRouter } from "expo-router"; // ✅ expo-router navigation
 
-export default function Login({ navigation }) {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const theme = useTheme();
+  const router = useRouter(); // ✅ hook pour la navigation
 
-  const handleLogin = () => {
-    // TODO: Logique de login (Firebase Auth par exemple)
-    console.log("Login with:", email, password);
+  const handleLogin = async () => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      console.log("User logged in:", userCredential.user.email);
+
+      // ✅ Redirection vers l'écran "Chat" dans le dossier (tabs)
+      router.push("(tabs)/Chat"); // Assurez-vous que le nom du dossier est correct
+    } catch (error) {
+      console.error("Login error:", error.message);
+      Alert.alert("Erreur", "Email ou mot de passe incorrect");
+    }
   };
 
   return (
-    <LinearGradient
-      colors={["#e0f7fa", "#80deea"]}
-      style={styles.container}
-    >
+    <LinearGradient colors={["#e0f7fa", "#80deea"]} style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.inner}
       >
         <Image
-          source={require("../assets/logo.jpg")} // Mets ton logo ici
+          source={require("../assets/logo.jpg")} // ton logo ici
           style={styles.logo}
         />
 
@@ -64,7 +80,7 @@ export default function Login({ navigation }) {
           Pas encore de compte ?{" "}
           <Text
             style={{ color: theme.colors.primary }}
-            onPress={() => navigation.navigate("Register")}
+            onPress={() => router.push("/Register")} // ✅ redirection Register
           >
             S'inscrire
           </Text>
