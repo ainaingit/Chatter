@@ -26,7 +26,7 @@ export default function TabLogin() {
           name="update"
           options={{
             headerTitle: () => <Title style={{ fontSize: 20 }}>Mettre à jour le statut</Title>,
-            headerShown: true,
+            headerShown: false,
             tabBarIcon: () => <MaterialIcons name="update" size={24} color="black" />, // Icône Update
           }}
         />
