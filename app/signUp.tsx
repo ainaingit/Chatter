@@ -14,7 +14,7 @@ export default function SignUp() {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       Alert.alert("Succès", "Compte créé avec succès !");
-      router.replace("/Login");
+      router.replace("/login");
     } catch (error: any) {
       console.log("Erreur inscription:", error);
       Alert.alert("Erreur", error.message);
