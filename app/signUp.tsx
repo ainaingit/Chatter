@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { View, TextInput, StyleSheet, Text, Alert } from "react-native";
 import { Button } from "react-native-paper";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../config/firebase";
+import { auth, db } from "../config/firebase"; // Assure-toi d'avoir importé 'db' (Firestore)
 import { useRouter } from "expo-router";
+import { doc, setDoc } from "firebase/firestore"; // Import de Firestore pour ajouter un utilisateur
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -12,7 +13,20 @@ export default function SignUp() {
 
   const handleSignUp = async () => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      // Créer un utilisateur avec email et mot de passe
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      
+      // Créer un document dans la collection 'users' de Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        email: user.email,
+        name: "", // Initialisation d'un nom vide, tu pourras le modifier après
+        bio: "",  // Initialisation d'une bio vide
+        photoUrl: "", // Photo par défaut
+        createdAt: new Date(), // Date de création
+      });
+
+      // Alerte et redirection après création
       Alert.alert("Succès", "Compte créé avec succès !");
       router.replace("/login");
     } catch (error: any) {

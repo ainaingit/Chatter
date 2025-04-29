@@ -10,7 +10,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TextInput, Button, Text, useTheme } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, getAuth } from "firebase/auth";
 import { auth } from "../config/firebase";
 import { useRouter } from "expo-router";
 
@@ -23,22 +23,39 @@ export default function Login() {
   const handleLogin = async () => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const userId = userCredential.user.uid;
+      const user = userCredential.user;
+      const userId = user.uid;
 
       // Stocker l'identifiant utilisateur localement
       await AsyncStorage.setItem("userId", userId);
 
-      console.log("User logged in:", userCredential.user.email);
+      console.log("User logged in:", user.email);
+
+      // Vérifier si un numéro est déjà lié
+      if (!user.phoneNumber) {
+        Alert.alert(
+          "Ajouter un numéro",
+          "Souhaitez-vous ajouter un numéro de téléphone pour faciliter vos futures connexions ?",
+          [
+            {
+              text: "Plus tard",
+              style: "cancel"
+            },
+            {
+              text: "Ajouter maintenant",
+              onPress: () => router.push("/LinkPhoneNumber")
+            }
+          ]
+        );
+      }
 
       // Aller à la page de chat
       router.push("(tabs)/Chat");
+
     } catch (error) {
       if (__DEV__) {
-        // Afficher l'erreur spécifique en mode développement
         console.error("Login error:", error.message);
       }
-      
-      // Afficher un message générique pour l'utilisateur
       Alert.alert("Erreur", "Email ou mot de passe incorrect. Veuillez réessayer.");
     }
   };
