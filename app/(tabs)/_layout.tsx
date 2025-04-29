@@ -9,9 +9,9 @@ export default function TabLogin() {
     <SafeAreaView style={{ flex: 1 }}>
       <Tabs>
         <Tabs.Screen
-          name="Chat"
+          name="index"
           options={{
-            headerShown: false,
+            headerShown: false,title : 'ome',
             tabBarIcon: () => (
               <Ionicons name="chatbubble-ellipses-outline" size={24} color="black" /> // Icône Chat (style WhatsApp)
             ),

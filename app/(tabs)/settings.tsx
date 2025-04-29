@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Switch, TouchableOpacity, Alert } from 'react-native';
 import { auth } from '../../config/firebase';
 import { signOut } from 'firebase/auth';
@@ -6,8 +6,8 @@ import { useRouter } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 
 export default function Settings() {
-  const [isNotificationEnabled, setIsNotificationEnabled] = React.useState(false);
-  const [isAutoSaveEnabled, setIsAutoSaveEnabled] = React.useState(false);
+  const [isNotificationEnabled, setIsNotificationEnabled] = useState(null);;
+  const [isAutoSaveEnabled, setIsAutoSaveEnabled] = useState(false);
   const router = useRouter();
 
   // Demander la permission pour les notifications

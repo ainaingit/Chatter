@@ -151,7 +151,7 @@ export default function Profile() {
 
       <Button
         mode="contained"
-        onPress={() => router.push("../editprofil")}
+        onPress={() => router.push("../edit")}
         style={styles.button}
       >
         Modifier les informations

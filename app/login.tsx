@@ -50,7 +50,7 @@ export default function Login() {
       }
 
       // Aller à la page de chat
-      router.push("(tabs)/Chat");
+      router.push("(tabs)");
 
     } catch (error) {
       if (__DEV__) {
