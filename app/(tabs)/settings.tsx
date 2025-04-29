@@ -3,11 +3,29 @@ import { View, Text, StyleSheet, Switch, TouchableOpacity, Alert } from 'react-n
 import { auth } from '../../config/firebase';
 import { signOut } from 'firebase/auth';
 import { useRouter } from 'expo-router';
+import * as Notifications from 'expo-notifications';
 
 export default function Settings() {
   const [isNotificationEnabled, setIsNotificationEnabled] = React.useState(false);
   const [isAutoSaveEnabled, setIsAutoSaveEnabled] = React.useState(false);
   const router = useRouter();
+
+  // Demander la permission pour les notifications
+  const requestNotificationPermission = async () => {
+    const { status } = await Notifications.requestPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission refusée', 'Les notifications sont nécessaires pour l\'application.');
+    }
+  };
+
+  const handleNotificationSwitch = async (value) => {
+    setIsNotificationEnabled(value);
+
+    if (value) {
+      // Si les notifications sont activées, demande la permission
+      await requestNotificationPermission();
+    }
+  };
 
   const handleLogout = async () => {
     Alert.alert(
@@ -44,12 +62,12 @@ export default function Settings() {
         <Switch
           trackColor={{ false: '#767577', true: '#81b0ff' }}
           thumbColor={isNotificationEnabled ? '#f5dd4b' : '#f4f3f4'}
-          onValueChange={() => setIsNotificationEnabled(prev => !prev)}
+          onValueChange={handleNotificationSwitch}
           value={isNotificationEnabled}
         />
       </View>
 
-      {/* Informations */}
+      {/* Informations personnelles */}
       <TouchableOpacity style={styles.settingItem}>
         <Text style={styles.settingText}>Informations personnelles</Text>
       </TouchableOpacity>
@@ -63,23 +81,6 @@ export default function Settings() {
       <TouchableOpacity style={styles.settingItem}>
         <Text style={styles.settingText}>Compte lié / Center Account</Text>
       </TouchableOpacity>
-
-      {/* Sauvegarde */}
-      <View style={styles.settingItem}>
-        <Text style={styles.settingText}>Sauvegarde automatique</Text>
-        <Switch
-          trackColor={{ false: '#ccc', true: '#4caf50' }}
-          thumbColor={isAutoSaveEnabled ? '#f5dd4b' : '#f4f3f4'}
-          onValueChange={() => setIsAutoSaveEnabled(prev => !prev)}
-          value={isAutoSaveEnabled}
-        />
-      </View>
-
-      {/* Statut */}
-      <View style={[styles.settingItem, { justifyContent: 'space-between' }]}>
-        <Text style={styles.settingText}>Statut du compte</Text>
-        <Text style={[styles.settingText, { color: '#4caf50', fontWeight: 'bold' }]}>Actif</Text>
-      </View>
 
       {/* Déconnexion */}
       <TouchableOpacity
