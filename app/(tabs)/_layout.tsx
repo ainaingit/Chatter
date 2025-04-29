@@ -32,6 +32,15 @@ export default function TabLogin() {
           options={{
             headerShown: false,
             tabBarIcon: () => (
+              <Ionicons name="person-outline" size={24} color="black" /> // Icône Settings (style WhatsApp)
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="profil"
+          options={{
+            headerShown: false,
+            tabBarIcon: () => (
               <Ionicons name="settings-outline" size={24} color="black" /> // Icône Settings (style WhatsApp)
             ),
           }}
