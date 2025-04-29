@@ -1,10 +1,10 @@
-import Constants from "expo-constants"; // ✅ pas avec des { }
+import Constants from "expo-constants";
 import { initializeApp } from "firebase/app";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { initializeAuth } from 'firebase/auth';
+import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import { getFirestore } from "firebase/firestore";
 
-const extra = Constants?.expoConfig?.extra ?? {}; // ✅ Plus sûr que manifest
+const extra = Constants?.expoConfig?.extra ?? {};
 
 export const firebaseConfig = {
   apiKey: extra.apiKey,
@@ -19,7 +19,10 @@ export const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-// Initialisation de l'auth sans persistance
-const auth = initializeAuth(app);
+// ✅ Auth avec persistance
+const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(AsyncStorage),
+});
+
 export const db = getFirestore(app);
-export { auth }; // Exporte auth
+export { auth };

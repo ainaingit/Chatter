@@ -1,9 +1,38 @@
 import React from 'react';
-import { View, Text, StyleSheet, Switch, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Switch, TouchableOpacity, Alert } from 'react-native';
+import { auth } from '../../config/firebase';
+import { signOut } from 'firebase/auth';
+import { useRouter } from 'expo-router';
 
 export default function Settings() {
   const [isNotificationEnabled, setIsNotificationEnabled] = React.useState(false);
   const [isAutoSaveEnabled, setIsAutoSaveEnabled] = React.useState(false);
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    Alert.alert(
+      "Confirmation de déconnexion",
+      "Êtes-vous sûr de vouloir vous déconnecter ?",
+      [
+        {
+          text: "Annuler",
+          style: "cancel"
+        },
+        {
+          text: "Se déconnecter",
+          onPress: async () => {
+            try {
+              await signOut(auth);
+              router.replace("/login");
+            } catch (error) {
+              console.error("Erreur lors de la déconnexion :", error);
+              Alert.alert("Erreur", "La déconnexion a échoué. Veuillez réessayer.");
+            }
+          }
+        }
+      ]
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -51,6 +80,16 @@ export default function Settings() {
         <Text style={styles.settingText}>Statut du compte</Text>
         <Text style={[styles.settingText, { color: '#4caf50', fontWeight: 'bold' }]}>Actif</Text>
       </View>
+
+      {/* Déconnexion */}
+      <TouchableOpacity
+        style={[styles.settingItem, { justifyContent: 'center' }]}
+        onPress={handleLogout}
+      >
+        <Text style={[styles.settingText, { color: 'red', fontWeight: 'bold', textAlign: 'center' }]}>
+          Se déconnecter
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }

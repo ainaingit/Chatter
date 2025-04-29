@@ -7,7 +7,7 @@ import {
   Platform,
   Alert,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage"; // ✅ ajouter ceci
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TextInput, Button, Text, useTheme } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -25,16 +25,21 @@ export default function Login() {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const userId = userCredential.user.uid;
 
-      // ✅ Stocker l'identifiant utilisateur localement
+      // Stocker l'identifiant utilisateur localement
       await AsyncStorage.setItem("userId", userId);
 
       console.log("User logged in:", userCredential.user.email);
 
-      // ✅ Aller à la page de chat
+      // Aller à la page de chat
       router.push("(tabs)/Chat");
     } catch (error) {
-      console.error("Login error:", error.message);
-      Alert.alert("Erreur", "Email ou mot de passe incorrect");
+      if (__DEV__) {
+        // Afficher l'erreur spécifique en mode développement
+        console.error("Login error:", error.message);
+      }
+      
+      // Afficher un message générique pour l'utilisateur
+      Alert.alert("Erreur", "Email ou mot de passe incorrect. Veuillez réessayer.");
     }
   };
 

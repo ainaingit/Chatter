@@ -1,52 +1,34 @@
-import React from "react";
-import { Text, StyleSheet } from "react-native";
-import { Button } from "react-native-paper";
-import { LinearGradient } from "expo-linear-gradient"; // ✅ Import dégradé
+// app/index.js
+import React, { useContext, useEffect } from "react";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { AuthContext } from "../config/AppProvider";
 import { useRouter } from "expo-router";
 
-const App = () => {
+export default function Index() {
+  const { user, isLoading } = useContext(AuthContext);
   const router = useRouter();
 
-  const handleGoToLogin = () => {
-    router.push("/login");
-  };
+  useEffect(() => {
+    if (!isLoading) {
+      if (user) {
+        router.replace("/(tabs)/Chat"); // 👈 redirige vers page de chat
+      } else {
+        router.replace("/login"); // 👈 redirige vers login
+      }
+    }
+  }, [user, isLoading]);
 
   return (
-    <LinearGradient
-    colors={["#e0f7fa", "#80deea"]} // 💙 dégradé doux ciel
-      style={styles.container}
-    >
-      <Text style={styles.welcomeText}>Welcome to Chatter!</Text>
-
-      <Button
-        mode="contained"
-        onPress={handleGoToLogin}
-        style={styles.button}
-        contentStyle={{ paddingVertical: 6 }}
-      >
-        Go to Login
-      </Button>
-    </LinearGradient>
+    <View style={styles.loadingContainer}>
+      <ActivityIndicator size="large" color="#00796B" />
+    </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  container: {
+  loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 20,
-  },
-  welcomeText: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#fff", // 🤍 pour bien ressortir
-    marginBottom: 20,
-  },
-  button: {
-    borderRadius: 8,
-    width: 180,
   },
 });
-
-export default App;
