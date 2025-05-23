@@ -2,6 +2,7 @@
   "expo": {
     "name": "Chatter",
     "slug": "Chatter",
+    "owner": "ainakevin",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -37,6 +38,18 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "8fc4a6cc-6fb7-4fad-b3cb-a96865df7676"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/8fc4a6cc-6fb7-4fad-b3cb-a96865df7676"
     }
   }
 }
