@@ -1,9 +1,9 @@
 import * as SecureStore from 'expo-secure-store';
-import { db } from '../../databases/supabase';
+import { supabase } from '../../database/supabase';
 
 export async function handleLogin(name: string, mdp: string): Promise<boolean> {
     try {
-        const { data, error } = await db
+        const { data, error } = await supabase
             .from('users')
             .select('name, mdp')
             .eq('name', name)
