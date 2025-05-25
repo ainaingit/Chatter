@@ -1,5 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
-import { supabase } from '../../database/supabase';
+import { supabase } from '../database/supabase';
 
 export async function handleLogin(name: string, mdp: string): Promise<boolean> {
     try {
