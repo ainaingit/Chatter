@@ -1,11 +1,35 @@
-// app/FirstPage.tsx
-
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
+import { supabase } from '../../database/supabase'; // adapte le chemin selon ton projet
+import { useState } from 'react';
 
 const FirstPage = () => {
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (data?.user) {
+        // 👤 Utilisateur connecté : on redirige vers le home
+        router.replace('/(tabs)/home');
+      } else {
+        // ❌ Pas connecté : reste sur cette page
+        setLoading(false);
+      }
+    };
+
+    checkUser();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#2D9CDB" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -15,7 +39,7 @@ const FirstPage = () => {
       </Text>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => router.replace('/(tabs)/home')}
+        onPress={() => router.replace('/indexing/login-screen')}
         activeOpacity={0.7}
       >
         <Text style={styles.buttonText}>Get Started</Text>

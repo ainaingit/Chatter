@@ -33,7 +33,7 @@ export default function TabLayout() {
       />
       <Tabs.Screen
         name="chat"
-        options={{ title: 'Chat' }}
+        options={{ title: 'Chat' , headerShown: false }}
       />
       <Tabs.Screen
         name="profile"

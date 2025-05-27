@@ -1,22 +1,27 @@
-import * as SecureStore from 'expo-secure-store';
 import { supabase } from '../database/supabase';
+import * as SecureStore from 'expo-secure-store';
 
-export async function handleLogin(name: string, mdp: string): Promise<boolean> {
+export async function handleLogin(email: string, password: string): Promise<boolean> {
     try {
-        const { data, error } = await supabase
-            .from('users')
-            .select('name, mdp')
-            .eq('name', name)
-            .eq('mdp', mdp)
-            .single();
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
 
-        if (error || !data) {
+        if (error) {
+            console.error('Erreur login:', error.message);
             return false;
         }
-        // Store user session in SecureStore
-        await SecureStore.setItemAsync('user_connected', JSON.stringify({ name: data.name }));
-        return true;
-    } catch (err) {
+
+        if (data?.user) {
+            // Stocker l'UUID dans SecureStore
+            await SecureStore.setItemAsync('user_uuid', data.user.id);
+            return true;
+        }
+
+        return false;
+    } catch (e) {
+        console.error('Exception login:', e);
         return false;
     }
 }
