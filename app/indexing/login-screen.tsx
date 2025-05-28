@@ -28,7 +28,7 @@ export default function Login() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <Text style={styles.title}>Connexion</Text>
+        <Text style={styles.title}>Chatter React native Expo </Text>
 
         <TextInput
           style={styles.input}

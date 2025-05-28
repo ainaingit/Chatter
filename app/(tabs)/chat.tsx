@@ -1,4 +1,3 @@
-// ChatListScreen.tsx – Liste des discussions
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -14,17 +13,16 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { supabase } from '../../database/supabase';
 
-// Composant représentant un élément de la liste de chats
 const ChatListItem = ({ name, lastMessage, time, avatar, unread, onPress }) => (
   <TouchableOpacity style={styles.itemContainer} onPress={onPress} activeOpacity={0.7}>
     <Image source={{ uri: avatar }} style={styles.avatar} />
     <View style={styles.textContainer}>
       <View style={styles.row}>
-        <Text style={styles.name}>{name}</Text>
+        <Text style={styles.name} numberOfLines={1}>{name}</Text>
         <Text style={styles.time}>{time}</Text>
       </View>
       <View style={styles.row}>
-        <Text style={styles.lastMessage} numberOfLines={1}>{lastMessage}</Text>
+        <Text style={styles.lastMessage} numberOfLines={1}>{lastMessage || ''}</Text>
         {unread > 0 && (
           <View style={styles.unreadBadge}>
             <Text style={styles.unreadText}>{unread}</Text>
@@ -41,75 +39,128 @@ export default function ChatListScreen() {
   const [searchText, setSearchText] = useState('');
   const [results, setResults] = useState([]);
   const [chatList, setChatList] = useState([]);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
+    const fetchUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    fetchUser();
     fetchChatList();
   }, []);
 
-  // Récupération des conversations depuis la vue Supabase
   const fetchChatList = async () => {
-    const { data, error } = await supabase.from('chats_view').select('*');
-    if (!error) setChatList(data);
+    if (!user) return;
+    const { data, error } = await supabase
+      .from('conversations')
+      .select('id, name, last_message, last_message_time, avatar_url, unread_count')
+      .contains('participants', [user.id]); // Récupérer uniquement les conversations où l'utilisateur est participant
+
+    if (error) {
+      console.log('Erreur fetch chats :', error.message);
+    } else {
+      setChatList(data || []);
+    }
   };
 
-  // Redirige vers l'écran de chat
+  // Rafraîchir la liste des chats à chaque changement d'user
+  useEffect(() => {
+    if (user) fetchChatList();
+  }, [user]);
+
   const handleChatPress = (chatId) => {
-    router.push(`/chat/${chatId}`);
+    router.push('../../');
   };
 
   const handleSearch = async (text) => {
     setSearchText(text);
-
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .ilike('email', `%${text}%`);
-
-    if (error) {
-      console.log('Erreur lors de la recherche :', error.message);
+    if (!text.trim()) {
+      setResults([]);
       return;
     }
 
-    setResults(data);
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, email, avatar_url')
+      .ilike('email', `%${text}%`)
+      .limit(10);
+
+    if (error) {
+      console.log('Erreur recherche utilisateur :', error.message);
+      return;
+    }
+    setResults(data.filter((u) => u.id !== user?.id)); // Exclure soi-même
   };
 
-  // Démarrer une nouvelle discussion avec un utilisateur
-  const handleStartChat = async (user) => {
+  const handleStartChat = async (userToChat) => {
     setShowSearch(false);
     setSearchText('');
     setResults([]);
 
-    const { data: existingChat } = await supabase
-      .from('chats')
-      .select('*')
-      .eq('participant_id', user.id)
-      .maybeSingle();
+    if (!user) return;
+
+    // Vérifier si chat existant entre user et userToChat (exactement ces deux participants)
+    const { data: existingChats, error } = await supabase
+      .from('conversations')
+      .select('id, participants')
+      .contains('participants', [user.id, userToChat.id]);
+
+    if (error) {
+      console.log('Erreur récupération chat existant:', error.message);
+      return;
+    }
+
+    let existingChat = null;
+    if (existingChats && existingChats.length > 0) {
+      existingChat = existingChats.find((chat) => {
+        const participants = chat.participants || [];
+        return (
+          participants.length === 2 &&
+          participants.includes(user.id) &&
+          participants.includes(userToChat.id)
+        );
+      });
+    }
 
     if (existingChat) {
-      router.push(`/chat/${existingChat.id}`);
+      router.push(`../${existingChat.id}`);
     } else {
-      const { data: newChat } = await supabase
-        .from('chats')
-        .insert({ participant_id: user.id })
+      // Créer un nouveau chat avec les deux participants
+      const { data: newChat, error: insertError } = await supabase
+        .from('conversations')
+        .insert({
+          participants: [user.id, userToChat.id],
+          created_at: new Date().toISOString(),
+          name: `${user.email} & ${userToChat.email}`, // Optionnel : générer un nom pour la conversation
+          avatar_url: userToChat.avatar_url || null, // Optionnel : afficher avatar de l'autre participant
+        })
         .select()
         .single();
 
-      router.push(`/chat/${newChat.id}`);
+      if (insertError) {
+        console.log('Erreur création chat :', insertError.message);
+        return;
+      }
+
+      router.push(`/${newChat.id}`);
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.header}>Chats</Text>
+      <Text style={styles.header}>      Chats</Text>
       <FlatList
         data={chatList}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <ChatListItem
             name={item.name}
-            lastMessage={item.lastMessage}
-            time={item.time}
-            avatar={item.avatar_url}
+            lastMessage={item.last_message}
+            time={item.last_message_time}
+            avatar={item.avatar_url || 'https://via.placeholder.com/54'}
             unread={item.unread_count || 0}
             onPress={() => handleChatPress(item.id)}
           />
@@ -119,7 +170,6 @@ export default function ChatListScreen() {
         showsVerticalScrollIndicator={false}
       />
 
-      {/* Bouton pour créer un nouveau chat */}
       <TouchableOpacity
         style={styles.newChatButton}
         onPress={() => setShowSearch(true)}
@@ -127,7 +177,6 @@ export default function ChatListScreen() {
         <Ionicons name="chatbubbles-outline" size={28} color="#fff" />
       </TouchableOpacity>
 
-      {/* Interface de recherche d'utilisateur */}
       {showSearch && (
         <View style={styles.searchOverlay}>
           <SafeAreaView style={{ flex: 1 }}>
@@ -138,26 +187,31 @@ export default function ChatListScreen() {
               value={searchText}
               onChangeText={handleSearch}
               autoFocus
+              keyboardType="email-address"
+              autoCapitalize="none"
             />
             <FlatList
               data={results}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item) => item.id.toString()}
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={styles.userItem}
                   onPress={() => handleStartChat(item)}
                 >
                   <Image
-                    source={{ uri: item.avatar_url }}
+                    source={{ uri: item.avatar_url || 'https://via.placeholder.com/40' }}
                     style={styles.userAvatar}
                   />
                   <Text style={styles.username}>{item.email}</Text>
                 </TouchableOpacity>
               )}
+              ListEmptyComponent={<Text>No users found</Text>}
+              keyboardShouldPersistTaps="handled"
             />
             <TouchableOpacity
               style={styles.closeSearch}
               onPress={() => setShowSearch(false)}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
               <Ionicons name="close" size={28} color="#000" />
             </TouchableOpacity>
@@ -169,11 +223,7 @@ export default function ChatListScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F7F8FA',
-    paddingHorizontal: 20,
-  },
+  container: { flex: 1, backgroundColor: '#F7F8FA', paddingHorizontal: 20 },
   header: {
     fontSize: 32,
     fontWeight: '700',
@@ -201,32 +251,15 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#E9ECEF',
   },
-  textContainer: {
-    flex: 1,
-    justifyContent: 'center',
-  },
+  textContainer: { flex: 1, justifyContent: 'center' },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  name: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#22223B',
-    flex: 1,
-  },
-  time: {
-    fontSize: 13,
-    color: '#9A8C98',
-    marginLeft: 8,
-  },
-  lastMessage: {
-    fontSize: 15,
-    color: '#4A4E69',
-    flex: 1,
-    marginTop: 4,
-  },
+  name: { fontSize: 18, fontWeight: '600', color: '#22223B', flex: 1 },
+  time: { fontSize: 13, color: '#9A8C98', marginLeft: 8 },
+  lastMessage: { fontSize: 15, color: '#4A4E69', flex: 1, marginTop: 4 },
   unreadBadge: {
     backgroundColor: '#3A86FF',
     borderRadius: 12,
@@ -237,14 +270,8 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     paddingHorizontal: 6,
   },
-  unreadText: {
-    color: '#fff',
-    fontWeight: '700',
-    fontSize: 13,
-  },
-  separator: {
-    height: 12,
-  },
+  unreadText: { color: '#fff', fontWeight: '700', fontSize: 13 },
+  separator: { height: 12 },
   newChatButton: {
     position: 'absolute',
     bottom: 32,
@@ -263,41 +290,31 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#ffffffee',
+    backgroundColor: 'rgba(255,255,255,0.98)',
     paddingHorizontal: 20,
-    zIndex: 10,
+    paddingTop: 60,
   },
-  searchTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    marginBottom: 12,
-    marginTop: 16,
-  },
+  searchTitle: { fontSize: 28, fontWeight: '700', marginBottom: 16 },
   searchInput: {
-    backgroundColor: '#F0F0F0',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 10,
     padding: 12,
-    borderRadius: 12,
     fontSize: 16,
     marginBottom: 16,
   },
   userItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderColor: '#eee',
   },
-  userAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 12,
-  },
-  username: {
-    fontSize: 16,
-    color: '#333',
-  },
+  userAvatar: { width: 40, height: 40, borderRadius: 20, marginRight: 12 },
+  username: { fontSize: 16, color: '#22223B' },
   closeSearch: {
     position: 'absolute',
-    top: 16,
+    top: 40,
     right: 20,
   },
 });
