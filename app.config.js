@@ -45,7 +45,7 @@ export default {
     extra: {
       router: {},
       eas: {
-        projectId: "8fc4a6cc-6fb7-4fad-b3cb-a96865df7676"
+        projectId: "9141e837-9d1b-48b9-b468-275b269a0d16" // ✅ bon projectId
       },
       supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL,
       supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY
@@ -54,7 +54,7 @@ export default {
       policy: "appVersion"
     },
     updates: {
-      url: "https://u.expo.dev/8fc4a6cc-6fb7-4fad-b3cb-a96865df7676"
+      url: "https://u.expo.dev/9141e837-9d1b-48b9-b468-275b269a0d16" // ✅ correspond au bon projectId
     }
   }
 };
