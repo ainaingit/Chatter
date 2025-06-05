@@ -13,7 +13,7 @@ export default function TabLayout() {
 
           if (route.name === 'home') {
             iconName = focused ? 'home' : 'home-outline';
-          } else if (route.name === 'chat') {
+          } else if (route.name === 'conversations') {
             iconName = focused ? 'chatbubble' : 'chatbubble-outline';
           } else if (route.name === 'profile') {
             iconName = focused ? 'person' : 'person-outline';
@@ -32,8 +32,8 @@ export default function TabLayout() {
         options={{ title: 'Home' , headerShown: false }}
       />
       <Tabs.Screen
-        name="chat"
-        options={{ title: 'Chat' , headerShown: false }}
+        name="conversations"
+        options={{ title: 'Discuss' , headerShown: false }}
       />
       <Tabs.Screen
         name="profile"
