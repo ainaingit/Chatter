@@ -28,7 +28,8 @@ export default function ConversationsScreen() {
   }, []);
 
   const goToChat = (conversationId: string) => {
-    router.push(`/chat/${conversationId}`);
+    router.push(`../chat/${conversationId}`);
+    // Optionally, you can also reset the stack to avoid going back to this screen
   };
 
   return (
