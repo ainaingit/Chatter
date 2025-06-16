@@ -1,12 +1,11 @@
-// utils/handleLogout.js
 import * as SecureStore from 'expo-secure-store';
 import { Alert } from 'react-native';
 import { router } from 'expo-router';
-import { supabase } from '../database/supabase'; // Assurez-vous d’avoir ce fichier configuré
+import { supabase } from '../database/supabase';
 
 export async function handleLogout() {
   try {
-    const { error } = await supabase.auth.signOut(); // Supprime l'utilisateur côté Supabase
+    const { error } = await supabase.auth.signOut();
 
     if (error) {
       console.error('Supabase logout error:', error.message);
@@ -14,7 +13,8 @@ export async function handleLogout() {
       return;
     }
 
-    await SecureStore.deleteItemAsync('user_connected');
+    // Supprime la bonne clé stockée
+    await SecureStore.deleteItemAsync('user_uuid');
 
     Alert.alert('Disconnected', 'You have been disconnected.', [
       {
