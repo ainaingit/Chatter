@@ -19,7 +19,7 @@ import {
 import { MaterialIcons, Ionicons, Entypo } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { fetchUserProfile, updateUserProfile, uploadAvatar, deleteAccount } from '../../functions/profileFunctions';
-import { handleLogout } from '../../database/supabase'; // Assure-toi que handleLogout est bien exporté
+import { handleLogout } from '../../functions/handleLogout'; // Assure-toi que handleLogout est bien exporté
 
 export default function Profile() {
   const [profile, setProfile] = useState<any>(null);
