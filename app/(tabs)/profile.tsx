@@ -21,7 +21,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { fetchUserProfile, updateUserProfile, uploadAvatar, deleteAccount } from '../../functions/profileFunctions';
 import { handleLogout } from '../../functions/handleLogout'; // Assure-toi que handleLogout est bien exporté
 
-export default function Profile() {
+export default function ProfileScreen() {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
