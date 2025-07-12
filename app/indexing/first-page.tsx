@@ -33,7 +33,7 @@ const FirstPage = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Coucou Ally </Text>
+      <Text style={styles.title}>Welcome to Chatter!</Text>
       <Text style={styles.subtitle}>
         Connect, chat, and share with your friends.
       </Text>
