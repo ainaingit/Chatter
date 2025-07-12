@@ -18,7 +18,11 @@ export default function TabLayout() {
           } else if (route.name === 'profile') {
             iconName = focused ? 'person' : 'person-outline';
           } else {
-            iconName = 'ellipse';
+            if (route.name === 'Testscreen') {
+              iconName = focused ? 'flask' : 'flask-outline';
+            } else {
+              iconName = 'ellipse';
+            }
           }
 
           return <Ionicons name={iconName as any} size={size} color={color} />;
@@ -39,6 +43,9 @@ export default function TabLayout() {
         name="profile"
         options={{ title: 'Profile' , headerShown: false }}
       />
+      <Tabs.Screen
+        name="Testscreen"
+        options={{ title: 'Ally', headerShown: false }}    ></Tabs.Screen>
     </Tabs>
   );
 }
