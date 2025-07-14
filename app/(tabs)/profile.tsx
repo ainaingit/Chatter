@@ -12,14 +12,17 @@ import {
   Pressable,
   TextInput,
   Alert,
-  TouchableWithoutFeedback,
+  TouchableWithoutFeedback, // allow me to dismiss the keyboard when I touch outside the input
   Animated,
   Easing,
+  Keyboard,
+  Platform,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { MaterialIcons, Ionicons, Entypo } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { fetchUserProfile, updateUserProfile, uploadAvatar, deleteAccount } from '../../functions/profileFunctions';
-import { handleLogout } from '../../functions/handleLogout'; // Assure-toi que handleLogout est bien exporté
+import { handleLogout } from '../../functions/handleLogout';
 
 export default function ProfileScreen() {
   const [profile, setProfile] = useState<any>(null);
@@ -174,7 +177,6 @@ export default function ProfileScreen() {
           </View>
         </ScrollView>
 
-        {/* Bouton Déconnexion fixe en bas */}
         <View style={styles.logoutContainer}>
           <TouchableOpacity style={styles.logoutBtnFixed} onPress={handleLogout}>
             <Ionicons name="log-out-outline" size={20} color="#fff" />
@@ -182,58 +184,78 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Modal édition profil */}
-        <Modal visible={isEditModalVisible} animationType="slide" transparent onRequestClose={() => setIsEditModalVisible(false)}>
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Modifier le profil</Text>
+        {/* Modal édition profil avec clavier géré */}
+        <Modal
+          visible={isEditModalVisible}
+          animationType="slide"
+          transparent
+          onRequestClose={() => setIsEditModalVisible(false)}
+        >
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={styles.modalOverlay}>
+              <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                style={{ width: '100%' }}
+              >
+                <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+                  <View style={styles.modalContent}>
+                    <Text style={styles.modalTitle}>Modifier le profil</Text>
 
-              <Text style={styles.label}>Nom d’utilisateur</Text>
-              <TextInput
-                style={styles.input}
-                value={editUsername}
-                onChangeText={setEditUsername}
-                placeholder="Nom d’utilisateur"
-                autoCapitalize="none"
-                placeholderTextColor="#999"
-              />
+                    <Text style={styles.label}>Nom d’utilisateur</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={editUsername}
+                      onChangeText={setEditUsername}
+                      placeholder="Nom d’utilisateur"
+                      autoCapitalize="none"
+                      returnKeyType="done"
+                      onSubmitEditing={Keyboard.dismiss}
+                      placeholderTextColor="#999"
+                    />
 
-              <Text style={styles.label}>Email</Text>
-              <TextInput
-                style={styles.input}
-                value={editEmail}
-                onChangeText={setEditEmail}
-                placeholder="Email"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                placeholderTextColor="#999"
-              />
+                    <Text style={styles.label}>Email</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={editEmail}
+                      onChangeText={setEditEmail}
+                      placeholder="Email"
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                      returnKeyType="done"
+                      onSubmitEditing={Keyboard.dismiss}
+                      placeholderTextColor="#999"
+                    />
 
-              <Text style={styles.label}>Bio</Text>
-              <TextInput
-                style={[styles.input, { height: 80, textAlignVertical: 'top' }]}
-                value={editBio}
-                onChangeText={setEditBio}
-                placeholder="Bio"
-                multiline
-                numberOfLines={4}
-                placeholderTextColor="#999"
-              />
+                    <Text style={styles.label}>Bio</Text>
+                    <TextInput
+                      style={[styles.input, { height: 80, textAlignVertical: 'top' }]}
+                      value={editBio}
+                      onChangeText={setEditBio}
+                      placeholder="Bio"
+                      multiline
+                      numberOfLines={4}
+                      returnKeyType="done"
+                      onSubmitEditing={Keyboard.dismiss}
+                      placeholderTextColor="#999"
+                    />
 
-              <View style={styles.buttonsRow}>
-                <Pressable style={[styles.button, styles.cancelButton]} onPress={() => setIsEditModalVisible(false)}>
-                  <Text style={[styles.buttonText, { color: '#444' }]}>Annuler</Text>
-                </Pressable>
+                    <View style={styles.buttonsRow}>
+                      <Pressable style={[styles.button, styles.cancelButton]} onPress={() => setIsEditModalVisible(false)}>
+                        <Text style={[styles.buttonText, { color: '#444' }]}>Annuler</Text>
+                      </Pressable>
 
-                <Pressable style={[styles.button, styles.saveButton]} onPress={handleUpdateProfile}>
-                  <Text style={[styles.buttonText, { color: '#fff' }]}>Enregistrer</Text>
-                </Pressable>
-              </View>
+                      <Pressable style={[styles.button, styles.saveButton]} onPress={handleUpdateProfile}>
+                        <Text style={[styles.buttonText, { color: '#fff' }]}>Enregistrer</Text>
+                      </Pressable>
+                    </View>
+                  </View>
+                </ScrollView>
+              </KeyboardAvoidingView>
             </View>
-          </View>
+          </TouchableWithoutFeedback>
         </Modal>
 
-        {/* Modal avatar fullscreen + bouton changer */}
+        {/* Modal avatar fullscreen */}
         <Modal
           visible={isAvatarModalVisible}
           transparent
@@ -267,7 +289,7 @@ const styles = StyleSheet.create({
 
   scrollContainer: {
     flexGrow: 1,
-    justifyContent: 'center', // centre verticalement la carte
+    justifyContent: 'center',
     padding: 20,
     alignItems: 'center',
   },
@@ -339,15 +361,15 @@ const styles = StyleSheet.create({
   },
 
   logoutBtnFixed: {
-  flexDirection: 'row',
-  justifyContent: 'center',
-  alignItems: 'center',
-  backgroundColor: '#ff3b30',
-  paddingVertical: 14,
-  borderRadius: 30,
-  width: '60%',  // <-- ici on limite la largeur à 80%
-  alignSelf: 'center', // centre le bouton horizontalement
-},
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#ff3b30',
+    paddingVertical: 14,
+    borderRadius: 30,
+    width: '60%',
+    alignSelf: 'center',
+  },
 
   logoutBtnText: {
     color: '#fff',

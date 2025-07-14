@@ -43,9 +43,6 @@ export default function TabLayout() {
         name="profile"
         options={{ title: 'Profile' , headerShown: false }}
       />
-      <Tabs.Screen
-        name="Testscreen"
-        options={{ title: 'Ally', headerShown: false }}    ></Tabs.Screen>
     </Tabs>
   );
 }
