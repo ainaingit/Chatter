@@ -5,7 +5,7 @@ interface AppProviderProps {
   children: ReactNode;
 }
 
-export const AppProvider = ({ children }: AppProviderProps) => {
+export const AppProviders = ({ children }: AppProviderProps) => {
   return (
     <AuthProvider>
       {children}
