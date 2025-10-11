@@ -1,9 +1,15 @@
 import { Text, View } from "react-native";
-import FirstPage from "./indexing/first-page";
 
 export default function Index() {
   return (
-    <FirstPage/>
-  )
-  ;
+    <View
+      style={{
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Text>Edit app/index.tsx to edit this screen.</Text>
+    </View>
+  );
 }
