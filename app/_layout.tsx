@@ -5,7 +5,7 @@ export default function RootLayout() {
   return (
     <AppProviders>
       <Stack
-        screenOptions={{ headerShown: false }}
+        screenOptions={{ headerShown: false,animation: 'fade', }}
       >
         <Stack.Screen
           name="index"
@@ -19,6 +19,12 @@ export default function RootLayout() {
           options={{
             headerShown: false,
             animation: 'slide_from_bottom',
+          }}
+        />
+        <Stack.Screen
+          name="upload"
+          options={{
+            headerShown: false,
           }}
         />
       </Stack>

@@ -10,7 +10,7 @@ export default function Index() {
   useEffect(() => {
     if (!loading) {
       if (user) {
-        router.replace('/chat-list'); // logged in → chat list
+        router.replace('/upload'); // logged in → chat list
       } else {
         router.replace('/auth-screen'); // not logged in → auth screen
       }
